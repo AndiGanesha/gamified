@@ -10,11 +10,7 @@ import (
 	"syscall"
 
 	"github.com/AndiGanesha/authentication/application"
-)
-
-const (
-	// filepath defined here
-	filePath = "src/rawdata"
+	"github.com/AndiGanesha/authentication/infrastructure"
 )
 
 func check(err error) {
@@ -48,17 +44,11 @@ func main() {
 	check(err)
 	defer app.Close()
 
-	// setup controller consumer
-	ctrl := controller.SetupController(app)
-
 	// interruptable apps
 	cancelOnInterrupt(app)
 
-	// declare and initiate consumer  that will be needed for calculation
-	infrastructure.ConsumeKafkaMessage(app, ctrl)
-
 	// intiate server
-	infrastructure.StartHTTPServer(app, ctrl)
+	infrastructure.ServeHTTP(app)
 
 	<-ctx.Done()
 }
