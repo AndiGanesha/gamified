@@ -57,17 +57,20 @@ Mainly the unit test will be set to test controller service and repotiry.
 # API Documentation
 
 The service exposes the following endpoints:
-
-    {host}/sign_up (POST)
-    {host}/sign_in (POST)
-
 and for that 2 expoxes endpoints we need to have application/json body that include this contract below as an example.
 
     {
         "username" : "abc",
         "password" : "123sssdddd",
-        "phone" : "+622222222"
+        "phone" : "+622222222" //Optional
     }
+## Sign up
+    {host}/sign_up (POST)
+For signing up users/front-end needed to hit the exposes API above using the contract needed, if the data is verified and username not currently in use, this service will making a new user and insert it to the user database, as that if its succeess it will trying to generate JWT token and save it to the Redis for later use in the actual Apps. and for the response if all the process above OK (200) it will give JWT.Raw token, that will be used in the actual Apps.
+
+    {host}/sign_in (POST)
+For signing in users/front-end needed to hit the exposes API above using the contract needed without the optional, if the data is verified and username there in the Database, this service will try to generate JWT token and save it to the Redis for later use in the actual Apps. and for the response if all the process above OK (200) it will give JWT.Raw token, that will be used in the actual Apps.
+
 # Development
 ## Running Tests
 
