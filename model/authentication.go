@@ -1,5 +1,9 @@
 package model
 
+import (
+	"encoding/json"
+)
+
 type User struct {
 	Id       int
 	Username string `json:"username"`
@@ -8,6 +12,15 @@ type User struct {
 }
 
 type ResponseSign struct {
-	Result string `json:"result"`
-	Error  error  `json:"error"`
+	Result Result `json:"result,omitempty"`
+	Error  string `json:"error,omitempty"`
+}
+
+type Result struct {
+	Token  string `json:"token,omitempty"`
+	Others string `json:"others,omitempty"`
+}
+
+func (s User) MarshalBinary() ([]byte, error) {
+	return json.Marshal(s)
 }

@@ -13,7 +13,7 @@ build:
 
 run:
 	export GOSUMDB=off
-	set -o allexport; source config/local.env; set +o allexport && ${GORUN} main.go ${ARGS}
+	set -o allexport; source configuration/local.env; set +o allexport && ${GORUN} main.go ${ARGS}
 
 mock: #run with -B
 	./mock/script.sh

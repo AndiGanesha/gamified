@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -17,8 +18,8 @@ import (
 type IAuthService interface {
 	VerifyUserFromDB(model.User) (bool, error)
 	CreateUser(model.User) error
-	GenerateToken(user string, pass string) (*jwt.Token, error)
-	SetRedisToken(string) error
+	GenerateToken(user string, pass string) (string, error)
+	SetRedisToken(token string, user model.User) error
 }
 
 // define a scallable struct if needed in the future
@@ -49,30 +50,35 @@ func (s *AuthService) VerifyUserFromDB(user model.User) (bool, error) {
 		return false, err
 	}
 
-	if user.Password != userDB.Password {
+	if userDB.Username == "" {
 		return false, nil
 	}
+
+	if user.Password != userDB.Password {
+		return true, errors.New("user or password wrong")
+	}
+
 	return true, nil
 }
 
-func (s *AuthService) GenerateToken(user string, pass string) (*jwt.Token, error) {
+func (s *AuthService) GenerateToken(user string, pass string) (string, error) {
 	token, err := s.createToken(user, pass)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
 	verifiedToken, err := verifyToken(token, pass)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
-	return verifiedToken, nil
+	return verifiedToken.Raw, nil
 }
 
-func (s *AuthService) SetRedisToken(string) error {
-	err := s.redis.Set(s.context, stockCode, summaryRecord, time.Duration(ss.config.Redis.DefaultExpiryTime)*time.Second).Err()
+func (s *AuthService) SetRedisToken(token string, user model.User) error {
+	err := s.redis.Set(s.context, token, user, time.Duration(s.config.Redis.ExpiryTime)*time.Second).Err()
 	if err != nil {
-		fmt.Printf("Failed to set key '%s' in Redis: %v\n", stockCode, err)
+		fmt.Printf("Failed to set key '%s' in Redis: %v\n", token, err)
 		return err
 	}
 	return nil

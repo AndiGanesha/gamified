@@ -35,25 +35,25 @@ func (c *AuthenticationController) SignUp(w http.ResponseWriter, r *http.Request
 	)
 
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-		res.Error = err
+		res.Error = err.Error()
 		writeResponse(w, res, 400)
 		return
 	}
 
 	// Verify username in DB
 	if ok, err := c.authService.VerifyUserFromDB(user); err != nil {
-		res.Error = err
+		res.Error = err.Error()
 		writeResponse(w, res, 500)
 		return
-	} else if !ok {
-		res.Result = "username already taken"
+	} else if ok {
+		res.Result.Others = "username already taken"
 		writeResponse(w, res, 400)
 		return
 	}
 
 	// Create user in DB
 	if err := c.authService.CreateUser(user); err != nil {
-		res.Error = err
+		res.Error = err.Error()
 		writeResponse(w, res, 500)
 		return
 	}
@@ -61,21 +61,20 @@ func (c *AuthenticationController) SignUp(w http.ResponseWriter, r *http.Request
 	// Generate token
 	token, err := c.authService.GenerateToken(user.Username, user.Password)
 	if err != nil {
-		res.Error = err
+		res.Error = err.Error()
 		writeResponse(w, res, 500)
 		return
 	}
 
 	// set token in redis
-	if err := c.authService.SetRedisToken(token); err != nil {
-		res.Error = err
+	if err := c.authService.SetRedisToken(token, user); err != nil {
+		res.Error = err.Error()
 		writeResponse(w, res, 500)
 		return
 	}
 
-	res.Result = token
+	res.Result.Token = token
 	writeResponse(w, res, 200)
-	return
 }
 
 func (c *AuthenticationController) SignIn(w http.ResponseWriter, r *http.Request) {
@@ -86,27 +85,33 @@ func (c *AuthenticationController) SignIn(w http.ResponseWriter, r *http.Request
 	)
 
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-		res.Error = err
+		res.Error = err.Error()
 		writeResponse(w, res, 400)
+		return
+	}
+
+	// Verify username in DB
+	if ok, err := c.authService.VerifyUserFromDB(user); err != nil || !ok {
+		res.Error = err.Error()
+		writeResponse(w, res, 500)
 		return
 	}
 
 	// Generate token
 	token, err := c.authService.GenerateToken(user.Username, user.Password)
 	if err != nil {
-		res.Error = err
+		res.Error = err.Error()
 		writeResponse(w, res, 500)
 		return
 	}
 
 	// set token in redis
-	if err := c.authService.SetRedisToken(token); err != nil {
-		res.Error = err
+	if err := c.authService.SetRedisToken(token, user); err != nil {
+		res.Error = err.Error()
 		writeResponse(w, res, 500)
 		return
 	}
 
-	res.Result = token
+	res.Result.Token = token
 	writeResponse(w, res, 200)
-	return
 }

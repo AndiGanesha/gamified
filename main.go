@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"os/signal"
@@ -20,7 +21,7 @@ func check(err error) {
 	}
 }
 
-func cancelOnInterrupt(app *application.App) {
+func cancelOnInterrupt(app *application.App, srv io.Closer) {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c,
 		os.Interrupt,
@@ -30,8 +31,16 @@ func cancelOnInterrupt(app *application.App) {
 	)
 	go func() {
 		fmt.Printf("system call: %+v", <-c)
+		srv.Close()
 		app.ContextCancel()
 	}()
+}
+
+func run(app *application.App) io.Closer {
+	server, err := infrastructure.ServeHTTP(app)
+	check(err)
+	<-app.Context.Done()
+	return server
 }
 
 func main() {
@@ -45,10 +54,7 @@ func main() {
 	defer app.Close()
 
 	// interruptable apps
-	cancelOnInterrupt(app)
+	server := run(app)
+	cancelOnInterrupt(app, server)
 
-	// intiate server
-	infrastructure.ServeHTTP(app)
-
-	<-ctx.Done()
 }

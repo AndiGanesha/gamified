@@ -48,14 +48,16 @@ func NewApp(ctx context.Context, ctxCancel context.CancelFunc) (*App, error) {
 		DB:       0,
 	})
 	app.Redis = *client
+	log.Println("connecting to Redis", address)
 
 	// Capture connection properties.
 	cfg := mysql.Config{
-		User:   appConfig.DB.Username,
-		Passwd: appConfig.DB.Password,
-		Net:    appConfig.DB.Host,
-		Addr:   appConfig.DB.Port,
-		DBName: appConfig.DB.Name,
+		User:                 appConfig.DB.Username,
+		Passwd:               appConfig.DB.Password,
+		Net:                  appConfig.DB.Host,
+		Addr:                 appConfig.DB.Port,
+		DBName:               appConfig.DB.Name,
+		AllowNativePasswords: true,
 	}
 
 	// Get a database handle.
@@ -63,6 +65,7 @@ func NewApp(ctx context.Context, ctxCancel context.CancelFunc) (*App, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Println("connecting to DB", appConfig.DB.Port)
 
 	app.DB = db
 
