@@ -16,6 +16,7 @@ run:
 	set -o allexport; source configuration/local.env; set +o allexport && ${GORUN} main.go ${ARGS}
 
 mock: #run with -B
+	chmod +x ./mock/script.sh
 	./mock/script.sh
 	$(GOCMD) generate ./...
 
