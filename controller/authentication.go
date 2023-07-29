@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/AndiGanesha/authentication/application"
@@ -27,9 +28,85 @@ func NewAuthenticationController(app *application.App) IAuthenticationController
 }
 
 func (c *AuthenticationController) SignUp(w http.ResponseWriter, r *http.Request) {
-	c.authService.SignUp(model.User{})
+	//Read input from request
+	var (
+		user model.User
+		res  model.ResponseSign
+	)
+
+	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+		res.Error = err
+		writeResponse(w, res, 400)
+		return
+	}
+
+	// Verify username in DB
+	if ok, err := c.authService.VerifyUserFromDB(user); err != nil {
+		res.Error = err
+		writeResponse(w, res, 500)
+		return
+	} else if !ok {
+		res.Result = "username already taken"
+		writeResponse(w, res, 400)
+		return
+	}
+
+	// Create user in DB
+	if err := c.authService.CreateUser(user); err != nil {
+		res.Error = err
+		writeResponse(w, res, 500)
+		return
+	}
+
+	// Generate token
+	token, err := c.authService.GenerateToken(user.Username, user.Password)
+	if err != nil {
+		res.Error = err
+		writeResponse(w, res, 500)
+		return
+	}
+
+	// set token in redis
+	if err := c.authService.SetRedisToken(token); err != nil {
+		res.Error = err
+		writeResponse(w, res, 500)
+		return
+	}
+
+	res.Result = token
+	writeResponse(w, res, 200)
+	return
 }
 
 func (c *AuthenticationController) SignIn(w http.ResponseWriter, r *http.Request) {
-	c.authService.SignUp(model.User{})
+	//Read input from request
+	var (
+		user model.User
+		res  model.ResponseSign
+	)
+
+	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+		res.Error = err
+		writeResponse(w, res, 400)
+		return
+	}
+
+	// Generate token
+	token, err := c.authService.GenerateToken(user.Username, user.Password)
+	if err != nil {
+		res.Error = err
+		writeResponse(w, res, 500)
+		return
+	}
+
+	// set token in redis
+	if err := c.authService.SetRedisToken(token); err != nil {
+		res.Error = err
+		writeResponse(w, res, 500)
+		return
+	}
+
+	res.Result = token
+	writeResponse(w, res, 200)
+	return
 }

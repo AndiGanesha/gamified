@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS user (
+  id         INT AUTO_INCREMENT NOT NULL,
+  user       VARCHAR(128) UNIQUE NOT NULL,
+  pass       VARCHAR(128) NOT NULL,
+  phone      VARCHAR(128) UNIQUE NOT NULL,
+  premi_status BOOLEAN,
+  PRIMARY KEY (`id`)
+);
