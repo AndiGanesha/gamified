@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/AndiGanesha/authentication/application"
-	"github.com/AndiGanesha/authentication/configuration"
-	"github.com/AndiGanesha/authentication/model"
-	"github.com/AndiGanesha/authentication/repository"
+	"github.com/AndiGanesha/gamified/application"
+	"github.com/AndiGanesha/gamified/configuration"
+	"github.com/AndiGanesha/gamified/model"
+	"github.com/AndiGanesha/gamified/repository"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/go-redis/redis/v8"
 )
@@ -82,6 +82,15 @@ func (s *AuthService) SetRedisToken(token string, user model.User) error {
 		return err
 	}
 	return nil
+}
+
+func (s *AuthService) GetUserFromRedis(token string) (user model.User, err error) {
+	err = s.redis.Get(s.context, token).Err()
+	if err != nil {
+		fmt.Printf("Failed to set key '%s' in Redis: %v\n", token, err)
+		return user, err
+	}
+	return user, nil
 }
 
 // Generate the token

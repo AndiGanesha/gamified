@@ -1,4 +1,4 @@
-module github.com/AndiGanesha/authentication
+module github.com/AndiGanesha/gamified
 
 go 1.20
 

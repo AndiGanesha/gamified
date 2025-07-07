@@ -3,8 +3,8 @@ package service
 import (
 	"testing"
 
-	"github.com/AndiGanesha/authentication/mock"
-	"github.com/AndiGanesha/authentication/model"
+	"github.com/AndiGanesha/gamified/mock"
+	"github.com/AndiGanesha/gamified/model"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )

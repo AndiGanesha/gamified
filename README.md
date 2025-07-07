@@ -1,4 +1,4 @@
-# Authentication
+# Gamified
 
 This is a service for processing user data get sign up and sign in
 
@@ -26,11 +26,11 @@ Mainly the unit test will be set to test controller service and repotiry.
 1. Clone the repository:
 
    ```shell
-   git clone https://github.com/AndiGanesha/authentication.git
+   git clone https://github.com/AndiGanesha/gamified.git
 2. Navigate to the project directory:
 
    ```shell
-   cd authentication
+   cd gamified
    go mod tidy
 3. Build a project:
 
@@ -42,9 +42,9 @@ Mainly the unit test will be set to test controller service and repotiry.
     $mysql -u root -p
      Enter password:
 
-    mysql> create database authentication;
-    mysql> use authentication;
-    mysql> source ~authentication/db/CREATE_USER_TABLE.SQL;
+    mysql> create database gamified;
+    mysql> use gamified;
+    mysql> source ~gamified/db/CREATE_USER_TABLE.SQL;
 5. Set up the configuration by creating a local.env file in the config directory. You can use the local.env.example file as a template.
 
     Run the service:
@@ -57,7 +57,7 @@ Mainly the unit test will be set to test controller service and repotiry.
 # API Documentation
 
 The service exposes the following endpoints:
-and for that 2 expoxes endpoints we need to have application/json body that include this contract below as an example.
+and for that 5 expoxes endpoints we need to have application/json body that include this contract below as an example.
 
     {
         "username" : "abc",
@@ -65,12 +65,25 @@ and for that 2 expoxes endpoints we need to have application/json body that incl
         "phone" : "+622222222" //Optional
     }
 ## Sign Up
-    {host}/sign_up (POST)
+    {host}/register (POST)
 For signing up users/front-end needed to hit the exposes API above using the contract needed, if the data is verified and username not currently in use, this service will making a new user and insert it to the user database, as that if its succeess it will trying to generate JWT token and save it to the Redis for later use in the actual Apps. and for the response if all the process above OK (200) it will give JWT.Raw token, that will be used in the actual Apps.
 
 ## Sign In
-    {host}/sign_in (POST)
+    {host}/login (POST)
 For signing in users/front-end needed to hit the exposes API above using the contract needed without the optional, if the data is verified and username there in the Database, this service will try to generate JWT token and save it to the Redis for later use in the actual Apps. and for the response if all the process above OK (200) it will give JWT.Raw token, that will be used in the actual Apps.
+This can be seen to be as the level goes up (almost like profile)
+
+## Get Products
+    {host}/get-products (GET)
+Get All products available to be bought later
+
+## Buy Products
+    {host}/buy-products (POST)
+Buying products using logged-in token got from the login or register
+
+## Buy Products
+    {host}/get-sales (POST)
+Get all the sales of the products, while seeing all the transaction
 
 # Development
 ## Running Tests

@@ -33,7 +33,8 @@ type Redis struct {
 }
 
 type Token struct {
-	AuthExpiry int `env:"TOKEN_AUTH_EXPIRY"`
+	AuthExpiry int    `env:"TOKEN_AUTH_EXPIRY"`
+	JwtKey     string `env:"TOKEN_KEY"`
 }
 
 type Server struct {

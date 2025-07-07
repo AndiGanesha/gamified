@@ -6,7 +6,7 @@ import (
 	"log"
 	"strconv"
 
-	"github.com/AndiGanesha/authentication/configuration"
+	"github.com/AndiGanesha/gamified/configuration"
 	"github.com/go-redis/redis/v8"
 	"github.com/go-sql-driver/mysql"
 )

@@ -10,8 +10,8 @@ import (
 	"runtime"
 	"syscall"
 
-	"github.com/AndiGanesha/authentication/application"
-	"github.com/AndiGanesha/authentication/infrastructure"
+	"github.com/AndiGanesha/gamified/application"
+	"github.com/AndiGanesha/gamified/infrastructure"
 )
 
 func check(err error) {

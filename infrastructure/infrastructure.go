@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/AndiGanesha/authentication/application"
-	"github.com/AndiGanesha/authentication/controller"
+	"github.com/AndiGanesha/gamified/application"
+	"github.com/AndiGanesha/gamified/controller"
 	"github.com/gorilla/mux"
 )
 
@@ -45,8 +45,11 @@ func handler(app *application.App) http.Handler {
 
 	// make it easier to add more handler
 	setup := controller.SetupController(app)
-	router.HandleFunc("/sign_up", setup.AuthenticationController.SignUp).Methods("POST")
-	router.HandleFunc("/sign_in", setup.AuthenticationController.SignIn).Methods("POST")
+	router.HandleFunc("/register", setup.AuthenticationController.SignUp).Methods("POST")
+	router.HandleFunc("/login", setup.AuthenticationController.SignIn).Methods("POST")
+	router.HandleFunc("/buy-product", setup.ProductController.BuyProduct).Methods("POST")
+	router.HandleFunc("/get-products", setup.ProductController.GetProducts).Methods("GET")
+	router.HandleFunc("/get-transactions", setup.ProductController.GetTransactions).Methods("POST")
 
 	return router
 }
