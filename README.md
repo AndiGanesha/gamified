@@ -81,7 +81,7 @@ Get All products available to be bought later
     {host}/buy-products (POST)
 Buying products using logged-in token got from the login or register
 
-## Buy Products
+## Get Sales
     {host}/get-sales (POST)
 Get all the sales of the products, while seeing all the transaction
 
